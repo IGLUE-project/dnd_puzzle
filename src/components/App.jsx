@@ -170,7 +170,7 @@ export default function App() {
 
   useEffect(() => {
     if (screen !== prevScreen.current) {
-      Utils.log("Screen ha cambiado de", prevScreen.current, "a", screen);
+      Utils.log("Screen has changed from", prevScreen.current, "to", screen);
       prevScreen.current = screen;
       saveAppState();
     }
