@@ -11,6 +11,7 @@ export default function App() {
   const { escapp, setEscapp, appSettings, setAppSettings, Storage, setStorage, Utils, I18n } = useContext(GlobalContext);
   const hasExecutedEscappValidation = useRef(false);
   const [loading, setLoading] = useState(true);
+  const [passed, setPassed] = useState(undefined);
   const [screen, setScreen] = useState(MAIN_SCREEN);
   const prevScreen = useRef(screen);
   const solution = useRef(null);
@@ -151,6 +152,7 @@ export default function App() {
       escapp.validate((success, erState) => {
         try {
           Utils.log("ESCAPP validation", success, erState);
+          console.log("ESCAPP validation", success, erState);
           if(success){
             restoreAppState(erState);
             setLoading(false);
@@ -218,6 +220,7 @@ export default function App() {
     }
   }
 
+
   function onKeypadSolved(_solution){
     Utils.log("onKeypadSolved with solution:", _solution);
     if(typeof _solution !== "string"){
@@ -227,6 +230,7 @@ export default function App() {
 
     switch(appSettings.actionAfterSolve){
       case "SHOW_MESSAGE":
+        setPassed(true);
         return setScreen(MESSAGE_SCREEN);
       case "NONE":
       default:
@@ -238,9 +242,13 @@ export default function App() {
     Utils.log("Submit puzzle solution", solution.current);
 
     escapp.submitNextPuzzle(solution.current, {}, (success, erState) => {
-      if(!success){
-        setScreen(MAIN_SCREEN);
-      }
+      
+      if (success) {
+          setPassed(true);
+        } else {
+          setPassed(false);
+          setScreen(MAIN_SCREEN);
+        }
       Utils.log("Solution submitted to Escapp", solution.current, success, erState);
     });
   }
@@ -256,7 +264,7 @@ export default function App() {
       );
     }
   };
-
+  
   const renderScreen = (screenId, screenContent) => (
     <div key={screenId} className={`screen_wrapper ${screen === screenId ? 'active' : ''}`} >
       {screenContent}
@@ -266,7 +274,7 @@ export default function App() {
   let screens = [
     {
       id: MAIN_SCREEN,
-      content: <MainScreen appHeight={appHeight} appWidth={appWidth} onKeypadSolved={onKeypadSolved} />
+      content: <MainScreen appHeight={appHeight} appWidth={appWidth} check={onKeypadSolved} passed={passed} />
     },
     {
       id: MESSAGE_SCREEN,
@@ -282,7 +290,7 @@ export default function App() {
       backgroundSize: appSettings.backgroundSize,
     }
   }
-
+  console.log("Render App with screen", screen);
   return (
     <div id="global_wrapper" 
       className={`${(appSettings !== null && typeof appSettings.skin === "string") ? appSettings.skin.toLowerCase() : ''}`}
