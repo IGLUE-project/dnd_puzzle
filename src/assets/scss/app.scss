@@ -83,11 +83,11 @@ button {
   padding: 20px;
   box-sizing: border-box;
 }
-.passed-true .dropzone {
-  border-color: green;
+#global_wrapper .passed-true .dropzone:not(.center) {
+  border-color: green !important;
 }
-.passed-false .dropzone {
-  border-color: red;
+#global_wrapper .passed-false .dropzone:not(.center) {
+  border-color: red !important;
 }
 .dropzone {
   position: relative;

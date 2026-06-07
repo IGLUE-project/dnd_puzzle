@@ -227,24 +227,19 @@ export default function App() {
       return;
     }
     solution.current = _solution;
-
-    switch(appSettings.actionAfterSolve){
-      case "SHOW_MESSAGE":
-        setPassed(true);
-        return setScreen(MESSAGE_SCREEN);
-      case "NONE":
-      default:
-        return submitPuzzleSolution();
-    }
+    submitPuzzleSolution();
   }
 
   function submitPuzzleSolution(){
     Utils.log("Submit puzzle solution", solution.current);
 
     escapp.submitNextPuzzle(solution.current, {}, (success, erState) => {
-      
+
       if (success) {
           setPassed(true);
+          if(appSettings.actionAfterSolve === "SHOW_MESSAGE"){
+            setScreen(MESSAGE_SCREEN);
+          }
         } else {
           setPassed(false);
           setScreen(MAIN_SCREEN);
